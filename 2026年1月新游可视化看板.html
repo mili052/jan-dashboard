@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>2026年1月新游可视化看板</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: rgba(255, 255, 255, 0.06);
+        --panel-2: rgba(255, 255, 255, 0.08);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.72);
+        --muted2: rgba(255, 255, 255, 0.55);
+        --border: rgba(255, 255, 255, 0.10);
+        --accent: #7aa2ff;
+        --good: #4ade80;
+        --warn: #fbbf24;
+        --bad: #fb7185;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+        background: radial-gradient(1200px 800px at 20% 0%, rgba(122,162,255,0.25), transparent 60%),
+                    radial-gradient(1000px 700px at 80% 10%, rgba(251,113,133,0.18), transparent 55%),
+                    radial-gradient(900px 700px at 50% 90%, rgba(74,222,128,0.12), transparent 60%),
+                    var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--accent); }
+      .wrap { max-width: 1280px; margin: 0 auto; padding: 22px 18px 40px; }
+      .topbar {
+        display: flex;
+        gap: 14px;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .title {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .title h1 {
+        font-size: 20px;
+        margin: 0;
+        letter-spacing: 0.2px;
+      }
+      .title .sub {
+        font-size: 12px;
+        color: var(--muted2);
+        line-height: 1.4;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.04);
+        color: var(--muted);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+      .pill strong { color: var(--text); }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 12px;
+      }
+      .card {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        border-radius: 14px;
+        padding: 12px;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+      }
+      .kpi {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 12px;
+      }
+      .kpi .label { font-size: 12px; color: var(--muted2); }
+      .kpi .value { font-size: 18px; font-weight: 700; letter-spacing: 0.2px; }
+      .kpi .hint { font-size: 12px; color: var(--muted); }
+      .kpi .dot { width: 10px; height: 10px; border-radius: 999px; background: rgba(122,162,255,0.75); }
+      .dot.good { background: rgba(74,222,128,0.85); }
+      .dot.warn { background: rgba(251,191,36,0.85); }
+      .dot.bad { background: rgba(251,113,133,0.85); }
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 4px 0 10px;
+      }
+      .section-title h2 {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 700;
+        letter-spacing: 0.25px;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 8px 10px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      .btn:hover { background: rgba(255,255,255,0.09); }
+      .btn:active { transform: translateY(1px); }
+      .btn.primary { border-color: rgba(122,162,255,0.35); background: rgba(122,162,255,0.16); }
+      .btn.primary:hover { background: rgba(122,162,255,0.22); }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .controls .group {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.04);
+        border-radius: 12px;
+      }
+      .controls label { font-size: 12px; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+      .controls input[type="text"], .controls input[type="date"] {
+        background: rgba(0,0,0,0.18);
+        border: 1px solid rgba(255,255,255,0.10);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 7px 10px;
+        font-size: 12px;
+        outline: none;
+      }
+      .controls input[type="checkbox"] { transform: translateY(1px); }
+      .controls .sep { width: 1px; height: 18px; background: rgba(255,255,255,0.12); margin: 0 2px; }
+      .note {
+        font-size: 12px;
+        color: var(--muted2);
+        line-height: 1.5;
+      }
+      .charts { min-height: 1px; }
+      .chart {
+        height: 320px;
+        width: 100%;
+      }
+      .chart.small { height: 300px; }
+      .table-wrap { overflow: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.10); }
+      table { width: 100%; border-collapse: collapse; min-width: 980px; }
+      th, td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); vertical-align: top; }
+      th { position: sticky; top: 0; background: rgba(10, 16, 36, 0.92); backdrop-filter: blur(6px); text-align: left; font-size: 12px; color: var(--muted); }
+      td { font-size: 12px; color: var(--text); }
+      tr:hover td { background: rgba(255,255,255,0.03); }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.05);
+        color: var(--muted);
+        margin-right: 6px;
+        margin-bottom: 6px;
+        white-space: nowrap;
+      }
+      .tag.good { border-color: rgba(74,222,128,0.35); background: rgba(74,222,128,0.12); color: rgba(213,255,228,0.92); }
+      .tag.warn { border-color: rgba(251,191,36,0.35); background: rgba(251,191,36,0.12); color: rgba(255,244,209,0.92); }
+      .tag.bad { border-color: rgba(251,113,133,0.35); background: rgba(251,113,133,0.12); color: rgba(255,214,222,0.92); }
+      .muted { color: var(--muted2); }
+      .nowrap { white-space: nowrap; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+      .hidden { display: none !important; }
+      .footer { margin-top: 14px; font-size: 12px; color: var(--muted2); }
+      @media (max-width: 980px) {
+        .topbar { align-items: flex-start; flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="title">
+          <h1>2026 年 1 月新游可视化看板</h1>
+          <div class="sub">
+            数据来自月报 <span class="mono">2026年1月新游月报.md</span>（自动结构化：上榜/异动、测试节点、风险标签）。默认展示 2026-01-01 至 2026-01-31，可切换时间范围。
+          </div>
+        </div>
+        <div class="pill">
+          <span class="mono">v1</span>
+          <span class="sep"></span>
+          <span>更新：<strong id="lastBuild"></strong></span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card kpi" style="grid-column: span 3;">
+          <div>
+            <div class="label">上榜/异动事件数</div>
+            <div class="value" id="kpiRanked">-</div>
+            <div class="hint muted">iOS + 微小畅销（含异动点）</div>
+          </div>
+          <div class="dot good"></div>
+        </div>
+        <div class="card kpi" style="grid-column: span 3;">
+          <div>
+            <div class="label">测试/在测事件数</div>
+            <div class="value" id="kpiTests">-</div>
+            <div class="hint muted">明确测试节点/投放动作</div>
+          </div>
+          <div class="dot"></div>
+        </div>
+        <div class="card kpi" style="grid-column: span 3;">
+          <div>
+            <div class="label">风险提示事件数</div>
+            <div class="value" id="kpiRisks">-</div>
+            <div class="hint muted">红包/合规/误判风险等</div>
+          </div>
+          <div class="dot warn"></div>
+        </div>
+        <div class="card kpi" style="grid-column: span 3;">
+          <div>
+            <div class="label">重点持续关注</div>
+            <div class="value" id="kpiFocus">-</div>
+            <div class="hint muted">如站稳/趋势型爬榜</div>
+          </div>
+          <div class="dot bad"></div>
+        </div>
+
+        <div class="card" style="grid-column: span 12;">
+          <div class="section-title">
+            <h2>筛选器</h2>
+            <div class="controls">
+              <button class="btn" id="btnReset">重置</button>
+              <button class="btn primary" id="btnExport">导出筛选结果 CSV</button>
+            </div>
+          </div>
+
+          <div class="controls" style="gap: 10px;">
+            <div class="group">
+              <label>关键词
+                <input id="q" type="text" placeholder="例如：塔防 / 大梦 / 王座守护者" size="26" />
+              </label>
+              <span class="sep"></span>
+              <label class="muted">范围</label>
+              <input id="from" type="date" />
+              <span class="muted">至</span>
+              <input id="to" type="date" />
+            </div>
+
+            <div class="group">
+              <label><input type="checkbox" id="evRanked" checked /> 上榜/异动</label>
+              <label><input type="checkbox" id="evTest" checked /> 测试/在测</label>
+              <label><input type="checkbox" id="evRisk" checked /> 风险/提示</label>
+            </div>
+
+            <div class="group">
+              <label class="muted">平台</label>
+              <label><input type="checkbox" id="pfIOS" checked /> iOS</label>
+              <label><input type="checkbox" id="pfMicro" checked /> 小游戏/微小</label>
+              <label><input type="checkbox" id="pfAndroid" checked /> Android</label>
+              <label><input type="checkbox" id="pfMulti" checked /> 多端/不明</label>
+            </div>
+
+            <div class="group">
+              <label class="muted">标签</label>
+              <label><input type="checkbox" id="tagFocus" checked /> 重点关注</label>
+              <label><input type="checkbox" id="tagTrend" checked /> 趋势/爬榜</label>
+              <label><input type="checkbox" id="tagStop" checked /> 停投/止损</label>
+              <label><input type="checkbox" id="tagAlias" checked /> 马甲/冲榜</label>
+            </div>
+          </div>
+
+          <div class="note" style="margin-top: 10px;">
+            说明：图表主要来自月报中的“数值点”（排名、消耗、留存等）。如果你后续补充周报数据，只要在此文件里更新数据数组即可扩展看板。
+          </div>
+        </div>
+
+        <div class="card charts" style="grid-column: span 8;">
+          <div class="section-title">
+            <h2>上榜事件：排名时间轴（数值点）</h2>
+            <div class="pill"><span class="muted">越靠上越高</span></div>
+          </div>
+          <div id="chartRankTimeline" class="chart"></div>
+          <div id="echartsMissing" class="note hidden" style="margin-top: 6px;">
+            当前环境未能加载图表库（可能离线）。表格与导出功能不受影响；如需图表，请联网后刷新本页面。
+          </div>
+        </div>
+
+        <div class="card charts" style="grid-column: span 4;">
+          <div class="section-title">
+            <h2>平台分布（上榜/异动）</h2>
+          </div>
+          <div id="chartPlatform" class="chart small"></div>
+        </div>
+
+        <div class="card charts" style="grid-column: span 12;">
+          <div class="section-title">
+            <h2>赛道分布（测试/在测事件）</h2>
+            <div class="pill"><strong id="catN">-</strong><span class="muted">类目</span></div>
+          </div>
+          <div id="chartCategory" class="chart small" style="height: 320px;"></div>
+        </div>
+
+        <div class="card" style="grid-column: span 12;">
+          <div class="section-title">
+            <h2>明细（可搜索/筛选）</h2>
+            <div class="pill"><strong id="rowsN">-</strong><span class="muted">条</span></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="min-width: 160px;">产品</th>
+                  <th style="min-width: 90px;">事件类型</th>
+                  <th style="min-width: 100px;">平台</th>
+                  <th style="min-width: 110px;">日期</th>
+                  <th style="min-width: 120px;">赛道/类型</th>
+                  <th style="min-width: 150px;">指标</th>
+                  <th style="min-width: 280px;">备注</th>
+                  <th style="min-width: 160px;">标签</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+          <div class="footer">
+            数据基于月报文本抽取：对“马甲/冲榜”类通常只做记录，不代表产品力；判断建议以“持续性 + 站稳区间 + 结构数据”为主。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ========= 数据区（来自 2026年1月新游月报.md 的结构化抽取）=========
+      // 事件类型：ranked=上榜/异动，test=测试/在测，risk=风险/提示
+      // 平台：ios / micro(小游戏/微小) / android / multi
+      // 标签：focus / trend / stop / alias / risk
+      const EVENTS = [
+        // iOS/Android 上榜与异动
+        {
+          name: "生存33天",
+          eventType: "ranked",
+          platform: "ios",
+          date: "2026-01-12",
+          category: "生存/建造",
+          metric: "iOS畅销 48",
+          note: "1/1 上线；iOS 爬升慢于小程序，推测仍在迭代 ROI/素材或深度不足。",
+          tags: ["focus"]
+        },
+        {
+          name: "逆战：未来",
+          eventType: "ranked",
+          platform: "ios",
+          date: "2026-01-13",
+          category: "FPS",
+          metric: "首发 iOS畅销 4",
+          note: "腾讯自研FPS；首发强势。",
+          tags: ["focus", "trend"]
+        },
+        {
+          name: "逆战：未来",
+          eventType: "ranked",
+          platform: "ios",
+          date: "2026-01-19",
+          category: "FPS",
+          metric: "iOS畅销 ≈10",
+          note: "截至 1/19 稳定在畅销 10 左右。",
+          tags: ["focus", "trend"]
+        },
+        {
+          name: "九霄仙府",
+          eventType: "ranked",
+          platform: "android",
+          date: "2026-01-30",
+          category: "修仙",
+          metric: "安卓畅销 52；1/28 日耗≈90万；CPI 24；付费成本 320；D1付费率 10%",
+          note: "冲高后短停，1/31 停止买量；修仙“吸量但贵”，留存与成本压力是关键。",
+          tags: ["stop"]
+        },
+        {
+          name: "时尚百货城",
+          eventType: "ranked",
+          platform: "ios",
+          date: "2026-01-29",
+          category: "模拟经营",
+          metric: "首发 iOS畅销 138",
+          note: "趋势型爬榜样本（2/2 到 34，非 1 月区间但用于趋势判断）。",
+          tags: ["focus", "trend"]
+        },
+        {
+          name: "奇遇西行",
+          eventType: "ranked",
+          platform: "ios",
+          date: "2026-01-30",
+          category: "放置卡牌",
+          metric: "iOS畅销 50",
+          note: "守护之境二代；同类常见“前期好、后期易掉”。",
+          tags: []
+        },
+        {
+          name: "神奇波比",
+          eventType: "ranked",
+          platform: "ios",
+          date: "2026-01-30",
+          category: "模拟经营+卡牌",
+          metric: "iOS畅销 90（仅一天）",
+          note: "偏短测拉量验证。",
+          tags: ["stop"]
+        },
+        {
+          name: "传奇/红包版马甲（多款）",
+          eventType: "ranked",
+          platform: "multi",
+          date: "2026-01-25",
+          category: "马甲/冲榜",
+          metric: "短上短下（1 天内跌出）",
+          note: "如猎龙骑士/梦回大唐等；记录为主，不代表产品力。",
+          tags: ["alias"]
+        },
+
+        // 小游戏/微小畅销
+        {
+          name: "冒险之心",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-09",
+          category: "RPG",
+          metric: "畅销 63",
+          note: "1/9 进畅销；至 1/12 仍 63。",
+          tags: []
+        },
+        {
+          name: "冒险之心",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-12",
+          category: "RPG",
+          metric: "畅销 63（持平）",
+          note: "偏稳态记录。",
+          tags: []
+        },
+        {
+          name: "小小兵者",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-09",
+          category: "卡牌/策略",
+          metric: "微小畅销 71",
+          note: "迷你勇士马甲包并行跑；下沉向策略。",
+          tags: []
+        },
+        {
+          name: "小小兵者",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-12",
+          category: "卡牌/策略",
+          metric: "微小畅销 38",
+          note: "短期爬升明显，观察能否站稳。",
+          tags: ["trend"]
+        },
+        {
+          name: "梦幻经理人",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-18",
+          category: "体育经营",
+          metric: "微小畅销 90",
+          note: "刚冒头，重点看长线留存与付费。",
+          tags: []
+        },
+        {
+          name: "天阶岛",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-12",
+          category: "卡牌",
+          metric: "微小畅销 94",
+          note: "联运跑量迹象。",
+          tags: []
+        },
+        {
+          name: "天阶岛",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-19",
+          category: "卡牌",
+          metric: "微小畅销 77",
+          note: "持续上行但幅度有限，按“站稳区间”继续观察。",
+          tags: ["trend"]
+        },
+        {
+          name: "梦仙灵",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-12",
+          category: "ARPG（马甲）",
+          metric: "微小畅销 49",
+          note: "马甲盘，不重点跟。",
+          tags: ["alias"]
+        },
+        {
+          name: "王座守护者",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-20",
+          category: "英雄工厂like",
+          metric: "上榜（爬榜中）",
+          note: "骷髅题材；重点看后续能否稳定在 50–80。",
+          tags: ["focus", "trend"]
+        },
+        {
+          name: "王座守护者",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-26",
+          category: "英雄工厂like",
+          metric: "微小畅销 50",
+          note: "慢爬到 50 附近，持续关注站稳性。",
+          tags: ["focus", "trend"]
+        },
+        {
+          name: "月之村",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-23",
+          category: "休闲益智",
+          metric: "上榜（社交裂变/导量）",
+          note: "据记录主要靠导量/裂变；红包页体验有缺失风险。",
+          tags: ["trend"]
+        },
+        {
+          name: "月之村",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-26",
+          category: "休闲益智",
+          metric: "微小畅销 51",
+          note: "若无买量仍能稳定在 50 左右，值得拆裂变链路。",
+          tags: ["trend"]
+        },
+        {
+          name: "墨剑江湖",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-26",
+          category: "竖版卡牌",
+          metric: "微小畅销 93",
+          note: "手游转小游戏，常规关注。",
+          tags: []
+        },
+        {
+          name: "多款传奇马甲（英雄铁魂等）",
+          eventType: "ranked",
+          platform: "micro",
+          date: "2026-01-25",
+          category: "马甲/冲榜",
+          metric: "集中短上短下",
+          note: "一天内跌出，记录为主。",
+          tags: ["alias"]
+        },
+
+        // 测试/在测（关键节点）
+        { name: "指间大营救", eventType: "test", platform: "android", date: "2026-01-05", category: "塔防", metric: "信息流测 APK", note: "向《向僵尸开炮》like；宠物+线性成长补深度。", tags: ["focus"] },
+        { name: "暮影传说", eventType: "test", platform: "micro", date: "2026-01-06", category: "中重度/题材+成熟玩法", metric: "小游戏测试", note: "盗墓题材；验证题材包装对点击率增益。", tags: ["focus"] },
+        { name: "织梦森林", eventType: "test", platform: "micro", date: "2026-01-09", category: "花园like", metric: "小游戏测试", note: "更偏稳态现金流盘，评估可行性。", tags: [] },
+        { name: "向末日开炮", eventType: "test", platform: "micro", date: "2026-01-20", category: "SLG", metric: "微小开测", note: "此前 APK 三轮测试；建议跟每轮改动→数据收敛。", tags: ["focus"] },
+        { name: "无限轮回", eventType: "test", platform: "android", date: "2026-01-20", category: "IAP入口+数值", metric: "投放测；1/21 消耗150w+；66服；次留49；付费次留80", note: "5周成型；关注D7/ARPPU/回本周期/素材稳定性与开服扩张后合服风险。", tags: ["focus"] },
+        { name: "失控进化", eventType: "test", platform: "android", date: "2026-01-19", category: "搜打撤/生存建造", metric: "安卓测试", note: "Rust授权；基地资产+科技树+强PVP掠夺长线循环。", tags: ["focus"] },
+        { name: "遗忘之海", eventType: "test", platform: "multi", date: "2026-01-15", category: "开放世界RPG", metric: "测试招募（2/5开测）", note: "1月作为风向项纳入；关注口碑与完成度。", tags: ["focus"] },
+        { name: "黎明前夕", eventType: "test", platform: "android", date: "2026-01-14", category: "塔防", metric: "信息流买量测", note: "冰川定制；偏布局参考。", tags: [] },
+        { name: "我的弟子都有先天圣体", eventType: "test", platform: "android", date: "2026-01-15", category: "修仙", metric: "二测（APK）", note: "反馈为内部数据较好一款，待补关键指标。", tags: ["focus"] },
+        { name: "天天狩猎", eventType: "test", platform: "android", date: "2026-01-14", category: "塔防/靶心", metric: "信息流测 APK", note: "星际末日靶心like变种；制作人背景来自《向僵尸开炮》早期团队。", tags: ["focus"] },
+        { name: "梦境护卫队", eventType: "test", platform: "multi", date: "2026-01-08", category: "塔防", metric: "Tap删档测（持续调数）", note: "持续迭代中。", tags: [] },
+        { name: "失控契约", eventType: "test", platform: "multi", date: "2026-01-10", category: "肉鸽塔防", metric: "在测（节点未详）", note: "与同类对标，关注素材点击优势。", tags: [] },
+        { name: "隆隆冒险号", eventType: "test", platform: "micro", date: "2026-01-18", category: "SLG", metric: "二测", note: "点点在SLG结构上的新尝试。", tags: [] },
+        { name: "仙界大掌门", eventType: "test", platform: "android", date: "2026-01-15", category: "模拟经营", metric: "APK首测", note: "团队背景较强，商业化深度待验证。", tags: ["focus"] },
+        { name: "梦幻合伙人", eventType: "test", platform: "android", date: "2026-01-22", category: "模拟经营", metric: "APK首测", note: "真人美女素材为主，关注合规与转化质量。", tags: ["risk"] },
+        { name: "妖妖有点怪", eventType: "test", platform: "micro", date: "2026-01-22", category: "模拟经营", metric: "微小测试（最后一轮）", note: "测试OK继续发，不行就砍。", tags: [] },
+        { name: "狼人杀：月夜推理乐园", eventType: "test", platform: "micro", date: "2026-01-19", category: "社交/推理", metric: "小游戏上线", note: "观察是否走轻推理+轻社交降门槛。", tags: [] },
+        { name: "Hello Kitty My Dream Store", eventType: "test", platform: "multi", date: "2026-01-21", category: "二合（IP）", metric: "Tap测试", note: "三丽欧IP二合，常规关注。", tags: [] },
+        { name: "咸鱼：进化", eventType: "test", platform: "micro", date: "2026-01-14", category: "放置塔防连线", metric: "抖小测试", note: "IP衍生；原型偏海外 tower war。", tags: [] },
+
+        // 风险/提示（独立事件，便于筛选）
+        { name: "月之村", eventType: "risk", platform: "micro", date: "2026-01-26", category: "风险提示", metric: "红包页缺失/提现问题风险", note: "可能引发投诉、风控与口碑风险。", tags: ["risk"] },
+        { name: "梦幻合伙人", eventType: "risk", platform: "android", date: "2026-01-22", category: "合规风险", metric: "真人擦边素材依赖", note: "短期抬点击但存在合规与转化质量风险。", tags: ["risk"] },
+        { name: "马甲冲榜（多款）", eventType: "risk", platform: "multi", date: "2026-01-25", category: "误判风险", metric: "短上短下≠产品力", note: "建议以持续性+站稳区间+结构数据为判断核心。", tags: ["risk", "alias"] }
+      ];
+
+      // ========= 工具函数 =========
+      const $ = (id) => document.getElementById(id);
+      const pad = (n) => (n < 10 ? "0" + n : "" + n);
+      const todayStr = (() => {
+        const d = new Date();
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      })();
+      $("lastBuild").textContent = todayStr;
+
+      const DEFAULT_FROM = "2026-01-01";
+      const DEFAULT_TO = "2026-01-31";
+
+      function tagClass(tag) {
+        if (tag === "focus") return "good";
+        if (tag === "trend") return "good";
+        if (tag === "stop") return "warn";
+        if (tag === "alias") return "warn";
+        if (tag === "risk") return "bad";
+        return "";
+      }
+
+      function labelEventType(t) {
+        if (t === "ranked") return "上榜/异动";
+        if (t === "test") return "测试/在测";
+        if (t === "risk") return "风险/提示";
+        return t;
+      }
+
+      function labelPlatform(p) {
+        if (p === "ios") return "iOS";
+        if (p === "micro") return "小游戏/微小";
+        if (p === "android") return "Android";
+        if (p === "multi") return "多端/不明";
+        return p;
+      }
+
+      function normalize(s) {
+        return (s || "").toString().trim().toLowerCase();
+      }
+
+      function parseRank(metric) {
+        // 抽取 "畅销 48" / "iOS畅销 4" / "微小畅销 71" / "安卓畅销 52" 等数字
+        const m = (metric || "").match(/(?:畅销|rank)\s*([0-9]{1,4})/i);
+        if (!m) return null;
+        return Number(m[1]);
+      }
+
+      function currentFilters() {
+        const q = normalize($("q").value);
+        const from = $("from").value || DEFAULT_FROM;
+        const to = $("to").value || DEFAULT_TO;
+
+        const enabledTypes = new Set();
+        if ($("evRanked").checked) enabledTypes.add("ranked");
+        if ($("evTest").checked) enabledTypes.add("test");
+        if ($("evRisk").checked) enabledTypes.add("risk");
+
+        const enabledPlatforms = new Set();
+        if ($("pfIOS").checked) enabledPlatforms.add("ios");
+        if ($("pfMicro").checked) enabledPlatforms.add("micro");
+        if ($("pfAndroid").checked) enabledPlatforms.add("android");
+        if ($("pfMulti").checked) enabledPlatforms.add("multi");
+
+        const tagToggles = {
+          focus: $("tagFocus").checked,
+          trend: $("tagTrend").checked,
+          stop: $("tagStop").checked,
+          alias: $("tagAlias").checked,
+          risk: true // 风险类由事件类型控制，这里不单独开关
+        };
+
+        return { q, from, to, enabledTypes, enabledPlatforms, tagToggles };
+      }
+
+      function matchesTags(ev, tagToggles) {
+        // 如果事件没有标签，允许通过
+        if (!ev.tags || ev.tags.length === 0) return true;
+        // 如果事件含某些“开关标签”，只要其中任一被允许即可
+        const checkTags = ["focus", "trend", "stop", "alias"];
+        const hasCheck = ev.tags.some(t => checkTags.includes(t));
+        if (!hasCheck) return true;
+        return ev.tags.some(t => checkTags.includes(t) && tagToggles[t]);
+      }
+
+      function filterEvents() {
+        const { q, from, to, enabledTypes, enabledPlatforms, tagToggles } = currentFilters();
+        const fromT = new Date(from + "T00:00:00").getTime();
+        const toT = new Date(to + "T23:59:59").getTime();
+        return EVENTS.filter(ev => {
+          if (!enabledTypes.has(ev.eventType)) return false;
+          if (!enabledPlatforms.has(ev.platform)) return false;
+          const t = new Date(ev.date + "T00:00:00").getTime();
+          if (Number.isFinite(fromT) && t < fromT) return false;
+          if (Number.isFinite(toT) && t > toT) return false;
+          if (!matchesTags(ev, tagToggles)) return false;
+
+          if (!q) return true;
+          const hay = normalize([ev.name, labelEventType(ev.eventType), labelPlatform(ev.platform), ev.category, ev.metric, ev.note, (ev.tags||[]).join(" ")].join(" "));
+          return hay.includes(q);
+        }).sort((a, b) => (a.date === b.date ? a.name.localeCompare(b.name, "zh") : a.date.localeCompare(b.date)));
+      }
+
+      function renderKPIs(rows) {
+        const ranked = rows.filter(r => r.eventType === "ranked").length;
+        const tests = rows.filter(r => r.eventType === "test").length;
+        const risks = rows.filter(r => r.eventType === "risk").length;
+        const focus = rows.filter(r => (r.tags || []).includes("focus")).length;
+
+        $("kpiRanked").textContent = ranked.toString();
+        $("kpiTests").textContent = tests.toString();
+        $("kpiRisks").textContent = risks.toString();
+        $("kpiFocus").textContent = focus.toString();
+      }
+
+      function renderTable(rows) {
+        $("rowsN").textContent = rows.length.toString();
+        const tb = $("tbody");
+        tb.innerHTML = "";
+        for (const ev of rows) {
+          const tr = document.createElement("tr");
+          const tagsHtml = (ev.tags || []).map(t => `<span class="tag ${tagClass(t)}">${t}</span>`).join("");
+          tr.innerHTML = `
+            <td><strong>${ev.name}</strong></td>
+            <td class="nowrap">${labelEventType(ev.eventType)}</td>
+            <td class="nowrap">${labelPlatform(ev.platform)}</td>
+            <td class="nowrap mono">${ev.date}</td>
+            <td>${ev.category || '<span class="muted">-</span>'}</td>
+            <td>${ev.metric || '<span class="muted">-</span>'}</td>
+            <td class="muted">${(ev.note || '').replace(/</g, "&lt;").replace(/>/g, "&gt;")}</td>
+            <td>${tagsHtml || '<span class="muted">-</span>'}</td>
+          `;
+          tb.appendChild(tr);
+        }
+      }
+
+      function toCSV(rows) {
+        const headers = ["产品", "事件类型", "平台", "日期", "赛道/类型", "指标", "备注", "标签"];
+        const esc = (v) => {
+          const s = (v ?? "").toString().replace(/\r?\n/g, " ").trim();
+          if (/[",]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+          return s;
+        };
+        const lines = [headers.join(",")];
+        for (const ev of rows) {
+          lines.push([
+            esc(ev.name),
+            esc(labelEventType(ev.eventType)),
+            esc(labelPlatform(ev.platform)),
+            esc(ev.date),
+            esc(ev.category),
+            esc(ev.metric),
+            esc(ev.note),
+            esc((ev.tags || []).join("|"))
+          ].join(","));
+        }
+        return lines.join("\n");
+      }
+
+      function downloadText(filename, content, mime = "text/plain;charset=utf-8") {
+        const blob = new Blob([content], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      // ========= 图表（ECharts）=========
+      function renderCharts(rows) {
+        const hasECharts = typeof window.echarts !== "undefined";
+        if (!hasECharts) {
+          $("echartsMissing").classList.remove("hidden");
+          return;
+        }
+        $("echartsMissing").classList.add("hidden");
+
+        // 1) 排名时间轴（ranked 且可解析 rank 的点）
+        const rankedPoints = rows
+          .filter(r => r.eventType === "ranked")
+          .map(r => {
+            const rk = parseRank(r.metric);
+            if (rk == null) return null;
+            return {
+              name: r.name,
+              platform: r.platform,
+              date: r.date,
+              rank: rk,
+              metric: r.metric,
+              note: r.note || ""
+            };
+          })
+          .filter(Boolean);
+
+        const timeline = echarts.init($("chartRankTimeline"));
+        const seriesByPlatform = {
+          ios: rankedPoints.filter(p => p.platform === "ios"),
+          micro: rankedPoints.filter(p => p.platform === "micro"),
+          android: rankedPoints.filter(p => p.platform === "android"),
+          multi: rankedPoints.filter(p => p.platform === "multi"),
+        };
+
+        function mkSeries(label, key, color) {
+          const pts = seriesByPlatform[key] || [];
+          return {
+            name: label,
+            type: "scatter",
+            symbolSize: 10,
+            itemStyle: { color },
+            data: pts.map(p => [p.date, p.rank, p.name, p.metric, p.note]),
+          };
+        }
+
+        timeline.setOption({
+          backgroundColor: "transparent",
+          tooltip: {
+            trigger: "item",
+            formatter: (params) => {
+              const d = params.data;
+              if (!d) return "";
+              const [date, rank, name, metric, note] = d;
+              return `
+                <div style="max-width: 360px;">
+                  <div style="font-weight:700;margin-bottom:4px;">${name}</div>
+                  <div style="opacity:.85;">日期：${date}</div>
+                  <div style="opacity:.85;">指标：${metric}</div>
+                  <div style="opacity:.75;margin-top:6px;line-height:1.35;">${(note || "").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>
+                </div>
+              `;
+            }
+          },
+          grid: { left: 50, right: 18, top: 22, bottom: 42 },
+          legend: {
+            top: 0,
+            textStyle: { color: "rgba(255,255,255,0.72)" }
+          },
+          xAxis: {
+            type: "time",
+            axisLine: { lineStyle: { color: "rgba(255,255,255,0.18)" } },
+            axisLabel: { color: "rgba(255,255,255,0.62)" },
+            splitLine: { show: true, lineStyle: { color: "rgba(255,255,255,0.06)" } }
+          },
+          yAxis: {
+            type: "value",
+            inverse: true,
+            name: "畅销名次（越小越好）",
+            nameTextStyle: { color: "rgba(255,255,255,0.55)" },
+            axisLine: { lineStyle: { color: "rgba(255,255,255,0.18)" } },
+            axisLabel: { color: "rgba(255,255,255,0.62)" },
+            splitLine: { show: true, lineStyle: { color: "rgba(255,255,255,0.06)" } }
+          },
+          series: [
+            mkSeries("iOS", "ios", "rgba(122,162,255,0.95)"),
+            mkSeries("小游戏/微小", "micro", "rgba(74,222,128,0.92)"),
+            mkSeries("Android", "android", "rgba(251,191,36,0.92)"),
+            mkSeries("多端/不明", "multi", "rgba(251,113,133,0.88)"),
+          ]
+        });
+
+        // 2) 平台分布（ranked 事件）
+        const rankedRows = rows.filter(r => r.eventType === "ranked");
+        const pfCount = { ios: 0, micro: 0, android: 0, multi: 0 };
+        for (const r of rankedRows) pfCount[r.platform] = (pfCount[r.platform] || 0) + 1;
+
+        const plat = echarts.init($("chartPlatform"));
+        plat.setOption({
+          backgroundColor: "transparent",
+          tooltip: { trigger: "item" },
+          legend: { bottom: 0, textStyle: { color: "rgba(255,255,255,0.72)" } },
+          series: [{
+            type: "pie",
+            radius: ["40%", "70%"],
+            avoidLabelOverlap: true,
+            label: { color: "rgba(255,255,255,0.75)", formatter: "{b}\n{d}%" },
+            labelLine: { lineStyle: { color: "rgba(255,255,255,0.20)" } },
+            data: [
+              { value: pfCount.ios, name: "iOS", itemStyle: { color: "rgba(122,162,255,0.90)" } },
+              { value: pfCount.micro, name: "小游戏/微小", itemStyle: { color: "rgba(74,222,128,0.88)" } },
+              { value: pfCount.android, name: "Android", itemStyle: { color: "rgba(251,191,36,0.88)" } },
+              { value: pfCount.multi, name: "多端/不明", itemStyle: { color: "rgba(251,113,133,0.80)" } },
+            ]
+          }]
+        });
+
+        // 3) 赛道分布（test 事件）
+        const tests = rows.filter(r => r.eventType === "test");
+        const catMap = new Map();
+        for (const t of tests) {
+          const k = t.category || "未分类";
+          catMap.set(k, (catMap.get(k) || 0) + 1);
+        }
+        const cats = Array.from(catMap.entries()).sort((a,b) => b[1]-a[1]);
+        $("catN").textContent = cats.length.toString();
+
+        const cat = echarts.init($("chartCategory"));
+        cat.setOption({
+          backgroundColor: "transparent",
+          tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+          grid: { left: 90, right: 18, top: 16, bottom: 40 },
+          xAxis: {
+            type: "value",
+            axisLine: { lineStyle: { color: "rgba(255,255,255,0.18)" } },
+            axisLabel: { color: "rgba(255,255,255,0.62)" },
+            splitLine: { show: true, lineStyle: { color: "rgba(255,255,255,0.06)" } }
+          },
+          yAxis: {
+            type: "category",
+            data: cats.map(c => c[0]),
+            axisLine: { lineStyle: { color: "rgba(255,255,255,0.18)" } },
+            axisLabel: { color: "rgba(255,255,255,0.72)" }
+          },
+          series: [{
+            type: "bar",
+            data: cats.map(c => c[1]),
+            barWidth: 14,
+            itemStyle: {
+              color: "rgba(122,162,255,0.62)",
+              borderRadius: [6, 6, 6, 6]
+            }
+          }]
+        });
+
+        // 响应式
+        window.addEventListener("resize", () => {
+          timeline.resize();
+          plat.resize();
+          cat.resize();
+        });
+      }
+
+      // ========= 主渲染 =========
+      function renderAll() {
+        const rows = filterEvents();
+        renderKPIs(rows);
+        renderTable(rows);
+        renderCharts(rows);
+      }
+
+      function resetControls() {
+        $("q").value = "";
+        $("from").value = DEFAULT_FROM;
+        $("to").value = DEFAULT_TO;
+        $("evRanked").checked = true;
+        $("evTest").checked = true;
+        $("evRisk").checked = true;
+        $("pfIOS").checked = true;
+        $("pfMicro").checked = true;
+        $("pfAndroid").checked = true;
+        $("pfMulti").checked = true;
+        $("tagFocus").checked = true;
+        $("tagTrend").checked = true;
+        $("tagStop").checked = true;
+        $("tagAlias").checked = true;
+      }
+
+      // ========= 事件绑定 =========
+      const watchIds = ["q","from","to","evRanked","evTest","evRisk","pfIOS","pfMicro","pfAndroid","pfMulti","tagFocus","tagTrend","tagStop","tagAlias"];
+      for (const id of watchIds) {
+        $(id).addEventListener("input", renderAll);
+        $(id).addEventListener("change", renderAll);
+      }
+      $("btnReset").addEventListener("click", () => { resetControls(); renderAll(); });
+      $("btnExport").addEventListener("click", () => {
+        const rows = filterEvents();
+        const csv = toCSV(rows);
+        const from = $("from").value || DEFAULT_FROM;
+        const to = $("to").value || DEFAULT_TO;
+        downloadText(`2026-01-新游看板_筛选导出_${from}_to_${to}.csv`, csv, "text/csv;charset=utf-8");
+      });
+
+      // ========= 初始化 =========
+      resetControls();
+      renderAll();
+    </script>
+
+    <!-- 图表库：若离线无法加载，将自动降级只显示表格 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  </body>
+</html>
+
